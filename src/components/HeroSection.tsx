@@ -46,7 +46,7 @@ const HeroSection = () => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <section id="home" className="relative h-screen overflow-hidden grain-overlay spotlight-glow">
+    <section className="relative h-screen overflow-hidden grain-overlay spotlight-glow">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
 
       <motion.div

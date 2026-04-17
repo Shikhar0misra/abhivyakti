@@ -27,11 +27,11 @@ const Index = () => {
       {showIntro && <OpeningAnimation onComplete={handleIntroComplete} />}
       <Navbar />
       <div className="fixed inset-0 z-0">
-        <Suspense fallback={<div id="home" className="h-screen bg-background" />}>
+        <Suspense fallback={<div className="h-screen bg-background" />}>
           <HeroSection />
         </Suspense>
       </div>
-      <div className="relative z-10 h-screen pointer-events-none" aria-hidden="true" />
+      <div id="home" className="relative z-10 h-screen pointer-events-none" aria-hidden="true" />
       <main className="relative z-10 bg-background">
         <IlhaamSection />
         <EventGallery />
