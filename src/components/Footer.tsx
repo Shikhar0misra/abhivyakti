@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer
       id="footer"
-      className="relative border-t grain-overlay"
+      className="relative z-[60] border-t grain-overlay shadow-[0_-36px_80px_rgba(0,0,0,0.72)]"
       style={{
         borderColor: "hsl(var(--border))",
         background: "hsl(0 0% 3%)",  // fully opaque near-black

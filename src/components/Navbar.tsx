@@ -1,50 +1,100 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
 import theatreMasks from "@/assets/theatre-masks.png";
+
+const navItems = [
+  { label: "Home", id: "home" },
+  { label: "Events", id: "ilhaam" },
+  { label: "Gallery", id: "gallery" },
+  { label: "About", id: "about" },
+  { label: "Contact", id: "footer" },
+];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handler);
+    handler();
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection(location.pathname.includes("event-gallery") ? "gallery" : "ilhaam");
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target.id) {
+          setActiveSection(visible.target.id);
+        }
+      },
+      {
+        rootMargin: "-35% 0px -45% 0px",
+        threshold: [0.08, 0.2, 0.4, 0.6],
+      },
+    );
+
+    navItems.forEach((item) => {
+      const node = document.getElementById(item.id);
+      if (node) observer.observe(node);
+    });
+
+    return () => observer.disconnect();
+  }, [location.pathname]);
+
   const scrollTo = (id: string) => {
+    if (location.pathname !== "/") {
+      navigate(`/#${id}`);
+      return;
+    }
+
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <motion.nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? "bg-background/95 backdrop-blur-md border-b border-border" : "bg-transparent"
+      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
+        scrolled ? "border-b border-border/50 bg-background/55 backdrop-blur-md" : "bg-background/20 backdrop-blur-sm"
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, delay: 3.5 }}
     >
-      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="container mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-6 py-4">
         <button onClick={() => scrollTo("home")} className="flex items-center gap-3 group">
-          <img src={theatreMasks} alt="Logo" className="w-8 h-8 group-hover:scale-110 transition-transform" />
+          <img src={theatreMasks} alt="Logo" className="h-8 w-8 transition-transform group-hover:scale-110" />
           <span className="font-heading text-xl font-bold text-foreground">Abhivyakti</span>
         </button>
-        <div className="hidden md:flex items-center gap-8">
-          {[
-            { label: "Home", id: "home" },
-            { label: "Events", id: "ilhaam" },
-            { label: "About Us", id: "about" },
-            { label: "Contact", id: "footer" },
-          ].map((item) => (
+
+        <div className="hidden items-center justify-center gap-2 rounded-full border border-border/50 bg-background/30 px-2 py-1 md:flex">
+          {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => scrollTo(item.id)}
-              className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-primary after:scale-x-0 after:origin-right after:transition-transform hover:after:scale-x-100 hover:after:origin-left"
+              className={`rounded-full px-4 py-2 font-body text-sm transition-colors ${
+                activeSection === item.id
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
               {item.label}
             </button>
           ))}
         </div>
+
+        <div />
       </div>
     </motion.nav>
   );
